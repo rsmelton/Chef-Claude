@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import IngredientsOnHandList from "./IngredientsOnHandList";
 import GetRecipe from "./GetRecipe";
 import ClaudeRecipe from "./ClaudeRecipe";
@@ -7,6 +7,13 @@ import { getRecipeFromMistral } from "../ai";
 const IngredientForm = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [recipe, setRecipe] = useState("");
+  const recipeSection = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (recipe !== "") {
+      recipeSection.current!.scrollIntoView({behavior: "smooth"});
+    }
+  }, [recipe]);
 
   const getRecipe = async () => {
     const recipeMarkdown = (await getRecipeFromMistral(ingredients)) ?? "";
@@ -64,7 +71,7 @@ const IngredientForm = () => {
                 *Note: Please wait a moment after clicking the button so we can
                 communicate with the AI system and get your recipe.*
               </p>
-              <GetRecipe getRecipe={getRecipe} />
+              <GetRecipe getRecipe={getRecipe} recipeSection={recipeSection} />
             </>
           )}
         </section>
